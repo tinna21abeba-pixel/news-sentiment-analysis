@@ -25,22 +25,11 @@ sns.set_theme(style="whitegrid", palette="muted", font_scale=1.1)
 
 
 class TechnicalAnalyzer:
-    """
-    Loads and enriches a stock price DataFrame with technical indicators.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Must contain columns: Date, Open, High, Low, Close, Adj Close, Volume
-    ticker : str
-        Stock ticker label used in plot titles.
-    """
 
     def __init__(self, df: pd.DataFrame, ticker: str = "STOCK"):
         self.ticker = ticker
         self.df = self._prepare(df.copy())
 
-    # ── Data Preparation ─────────────────────────────────────────────────────
     def _prepare(self, df: pd.DataFrame) -> pd.DataFrame:
         """Parse dates, sort, and forward-fill small gaps."""
         df["Date"] = pd.to_datetime(df["Date"])
