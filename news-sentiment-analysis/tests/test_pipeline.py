@@ -1,9 +1,4 @@
-"""
-test_pipeline.py
-================
-Nova Financial Solutions – Unit Tests
-Run with: pytest tests/ -v
-"""
+
 
 import pytest
 import pandas as pd
@@ -21,7 +16,6 @@ from src.correlation_analysis import CorrelationAnalyzer
 
 @pytest.fixture
 def sample_news_df():
-    """Minimal financial news dataset for testing."""
     return pd.DataFrame({
         "headline": [
             "Apple beats earnings expectations with record revenue",
