@@ -61,17 +61,7 @@ class SentimentAnalyzer:
         return "Neutral"
 
     def align_to_trading_days(self, trading_calendar: pd.DatetimeIndex = None) -> pd.DataFrame:
-        """
-        Normalise publication dates:
-          - Strip timezone info → date-only
-          - Weekend / holiday articles → forwarded to next trading Monday
-
-        Parameters
-        ----------
-        trading_calendar : DatetimeIndex, optional
-            Pass the actual trading days from yfinance data for precision.
-            If None, weekends are rolled forward to Monday.
-        """
+    
         self.df["date"] = pd.to_datetime(self.df["date"], utc=True, errors="coerce")
         self.df["trade_date"] = self.df["date"].dt.normalize().dt.tz_localize(None)
 
@@ -101,7 +91,6 @@ class SentimentAnalyzer:
         print(f"[Date Align] Dates normalised. Shape: {self.df.shape}")
         return self.df
 
-    # ── Daily Aggregation ─────────────────────────────────────────────────────
     def aggregate_daily_sentiment(self) -> pd.DataFrame:
         """
         Aggregate sentiment per (stock, trade_date):
@@ -121,7 +110,6 @@ class SentimentAnalyzer:
         agg["sentiment_label"] = agg["avg_sentiment"].apply(self._classify)
         return agg
 
-    # ── Visualisations ────────────────────────────────────────────────────────
     def plot_sentiment_distribution(self, save_path: str = None):
         """Bar chart + histogram of VADER compound scores."""
         fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -136,7 +124,6 @@ class SentimentAnalyzer:
         axes[0].set_title("Headline Sentiment Distribution", fontsize=12, fontweight="bold")
         axes[0].set_ylabel("Count")
 
-        # Compound score distribution
         axes[1].hist(self.df["vader_compound"].dropna(), bins=80,
                      color=PALETTE[0], edgecolor="white", alpha=0.85)
         axes[1].axvline(0.05, color="#2ca02c", linestyle="--", linewidth=1.5,

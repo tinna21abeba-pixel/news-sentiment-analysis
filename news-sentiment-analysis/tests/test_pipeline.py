@@ -16,6 +16,7 @@ from src.correlation_analysis import CorrelationAnalyzer
 
 @pytest.fixture
 def sample_news_df():
+   
     return pd.DataFrame({
         "headline": [
             "Apple beats earnings expectations with record revenue",
