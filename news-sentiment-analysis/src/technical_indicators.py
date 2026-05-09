@@ -1,9 +1,3 @@
-"""
-technical_indicators.py
-=======================
-Nova Financial Solutions – Task 2
-Compute technical indicators with TA-Lib and additional metrics with PyNance.
-"""
 
 import pandas as pd
 import numpy as np
@@ -51,7 +45,6 @@ class TechnicalAnalyzer:
 
         return df
 
-    # ── Indicator Computation ────────────────────────────────────────────────
     def compute_all_indicators(self) -> pd.DataFrame:
         """Compute SMA, EMA, RSI, MACD, Bollinger Bands, and ATR."""
         close = self.df["Close"].values.astype(float)
@@ -74,7 +67,7 @@ class TechnicalAnalyzer:
             self.df["BB_Lower"]    = lower
             self.df["ATR_14"]      = talib.ATR(high, low, close, timeperiod=14)
         else:
-            # Pandas fallback
+    
             self.df["SMA_20"] = self.df["Close"].rolling(20).mean()
             self.df["SMA_50"] = self.df["Close"].rolling(50).mean()
             self.df["EMA_20"] = self.df["Close"].ewm(span=20, adjust=False).mean()
@@ -86,15 +79,12 @@ class TechnicalAnalyzer:
                 self._pandas_bbands(self.df["Close"], 20)
             self.df["ATR_14"] = self._pandas_atr(self.df, 14)
 
-        # Daily Return
         self.df["Daily_Return"] = self.df["Adj Close"].pct_change() * 100
-        # Cumulative Return
         self.df["Cum_Return"] = (1 + self.df["Adj Close"].pct_change()).cumprod() - 1
 
         print(f"[{self.ticker}] Indicators computed successfully.")
         return self.df
 
-    # ── Pandas Fallback Indicators ────────────────────────────────────────────
     @staticmethod
     def _pandas_rsi(series: pd.Series, period: int = 14) -> pd.Series:
         delta = series.diff()
@@ -128,7 +118,6 @@ class TechnicalAnalyzer:
         ], axis=1).max(axis=1)
         return tr.rolling(period).mean()
 
-    # ── PyNance / Additional Metrics ─────────────────────────────────────────
     def compute_pynance_metrics(self) -> dict:
         """
         Compute additional financial metrics equivalent to PyNance outputs.
@@ -136,23 +125,18 @@ class TechnicalAnalyzer:
         """
         returns = self.df["Daily_Return"].dropna() / 100  # decimal
 
-        # Annualised Volatility
         vol = returns.std() * np.sqrt(252)
 
-        # Sharpe Ratio (assumes risk-free rate = 0 for simplicity)
         sharpe = (returns.mean() / returns.std()) * np.sqrt(252)
 
-        # Sortino Ratio
         downside = returns[returns < 0].std() * np.sqrt(252)
         sortino  = (returns.mean() * 252) / downside if downside != 0 else np.nan
 
-        # Maximum Drawdown
         cum_returns  = (1 + returns).cumprod()
         rolling_max  = cum_returns.cummax()
         drawdown     = (cum_returns - rolling_max) / rolling_max
         max_drawdown = drawdown.min()
 
-        # Calmar Ratio
         annualised_return = returns.mean() * 252
         calmar = annualised_return / abs(max_drawdown) if max_drawdown != 0 else np.nan
 
@@ -169,15 +153,8 @@ class TechnicalAnalyzer:
             print(f"  {k:30s}: {v}")
         return metrics
 
-    # ── Multi-Panel Visualization ────────────────────────────────────────────
     def plot_indicators(self, save_path: str = None):
-        """
-        Publication-quality 4-panel chart:
-          Panel 1 – Closing Price + SMA20 + EMA50 + Bollinger Bands
-          Panel 2 – Volume
-          Panel 3 – RSI (14) with 30/70 bands
-          Panel 4 – MACD histogram + signal
-        """
+    
         df = self.df.dropna(subset=["SMA_20", "RSI_14", "MACD"])
 
         fig = plt.figure(figsize=(18, 14))
@@ -188,7 +165,6 @@ class TechnicalAnalyzer:
         ax3 = fig.add_subplot(gs[2], sharex=ax1)
         ax4 = fig.add_subplot(gs[3], sharex=ax1)
 
-        # ── Panel 1: Price + MAs + Bollinger ─────────────────────────────────
         ax1.plot(df.index, df["Close"],    color="#1f77b4", linewidth=1.4,  label="Close Price", zorder=3)
         ax1.plot(df.index, df["SMA_20"],   color="#ff7f0e", linewidth=1.2,  linestyle="--", label="SMA 20")
         ax1.plot(df.index, df["EMA_50"],   color="#2ca02c", linewidth=1.2,  linestyle="-.", label="EMA 50")
@@ -201,7 +177,6 @@ class TechnicalAnalyzer:
         ax1.legend(loc="upper left", fontsize=9, ncol=4)
         ax1.tick_params(labelbottom=False)
 
-        # ── Panel 2: Volume ───────────────────────────────────────────────────
         colors = ["#d62728" if r < 0 else "#2ca02c"
                   for r in df["Daily_Return"].fillna(0)]
         ax2.bar(df.index, df["Volume"], color=colors, alpha=0.7, width=1)
@@ -211,7 +186,6 @@ class TechnicalAnalyzer:
         )
         ax2.tick_params(labelbottom=False)
 
-        # ── Panel 3: RSI ──────────────────────────────────────────────────────
         ax3.plot(df.index, df["RSI_14"], color="#9467bd", linewidth=1.3, label="RSI (14)")
         ax3.axhline(70, color="crimson", linestyle="--", linewidth=1, alpha=0.8, label="Overbought (70)")
         ax3.axhline(30, color="green",   linestyle="--", linewidth=1, alpha=0.8, label="Oversold (30)")
@@ -224,7 +198,6 @@ class TechnicalAnalyzer:
         ax3.legend(loc="upper left", fontsize=8, ncol=3)
         ax3.tick_params(labelbottom=False)
 
-        # ── Panel 4: MACD ─────────────────────────────────────────────────────
         ax4.plot(df.index, df["MACD"],        color="#1f77b4", linewidth=1.2, label="MACD")
         ax4.plot(df.index, df["MACD_Signal"], color="#ff7f0e", linewidth=1.2, label="Signal")
         hist_colors = ["#d62728" if v < 0 else "#2ca02c"

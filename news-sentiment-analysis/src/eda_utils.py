@@ -208,7 +208,6 @@ class EDAAnalyzer:
             plt.savefig(save_path, dpi=150, bbox_inches="tight")
         plt.show()
 
-    # ── Topic / Keyword Modeling ─────────────────────────────────────────────
     def top_tfidf_keywords(self, top_n: int = 20) -> pd.DataFrame:
         """Extract top N keywords by mean TF-IDF score."""
         headlines = self.df["headline"].dropna().tolist()
@@ -248,7 +247,6 @@ class EDAAnalyzer:
             plt.savefig(save_path, dpi=150, bbox_inches="tight")
         plt.show()
 
-    # ── Weekly Heatmap ───────────────────────────────────────────────────────
     def plot_publication_heatmap(self, save_path: str = None):
         """
         Figure 5 – Heatmap of publication volume by day-of-week × hour.
@@ -277,7 +275,6 @@ class EDAAnalyzer:
             plt.savefig(save_path, dpi=150, bbox_inches="tight")
         plt.show()
 
-    # ── Stock-level summary ──────────────────────────────────────────────────
     def stock_coverage_summary(self, top_n: int = 15) -> pd.DataFrame:
         """Count articles per stock ticker."""
         return (

@@ -1,9 +1,3 @@
-"""
-sentiment_analysis.py
-=====================
-Nova Financial Solutions – Task 3 (Part A)
-Apply NLTK VADER to assign sentiment scores to financial headlines.
-"""
 
 import pandas as pd
 import numpy as np
@@ -13,8 +7,6 @@ import nltk
 import warnings
 
 warnings.filterwarnings("ignore")
-
-# Download VADER lexicon if not present
 try:
     nltk.data.find("sentiment/vader_lexicon.zip")
 except LookupError:
@@ -27,24 +19,6 @@ PALETTE = sns.color_palette("muted")
 
 
 class SentimentAnalyzer:
-    """
-    Assigns VADER sentiment scores to financial news headlines
-    and classifies them as Positive, Neutral, or Negative.
-
-    Why VADER?
-    ----------
-    VADER (Valence Aware Dictionary and sEntiment Reasoner) is specifically
-    tuned for short social-media / news texts and understands financial
-    qualifiers (e.g., "beats expectations", "misses forecast") better than
-    general-purpose models. It requires no training data, making it ideal
-    for rapid deployment.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        News dataframe with at minimum columns: headline, date, stock
-    """
-
     POSITIVE_THRESHOLD = 0.05
     NEGATIVE_THRESHOLD = -0.05
 
@@ -52,7 +26,6 @@ class SentimentAnalyzer:
         self.df = df.copy()
         self._sia = SentimentIntensityAnalyzer()
 
-    # ── Core Scoring ─────────────────────────────────────────────────────────
     def score_headlines(self) -> pd.DataFrame:
         """
         Apply VADER to each headline and return the enriched DataFrame.
@@ -87,7 +60,6 @@ class SentimentAnalyzer:
             return "Negative"
         return "Neutral"
 
-    # ── Normalise Dates to Trading Days ──────────────────────────────────────
     def align_to_trading_days(self, trading_calendar: pd.DatetimeIndex = None) -> pd.DataFrame:
         """
         Normalise publication dates:
